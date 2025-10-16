@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suite d'Outils Mathématiques</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+            color: #e0e0e0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            color: #00d4ff;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .top-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h2 {
+            color: #00d4ff;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        /* Convertisseur de devises */
+        .currency-converter .input-group {
+            margin-bottom: 15px;
+        }
+
+        .currency-converter label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b0b0b0;
+            font-size: 0.9em;
+        }
+
+        .currency-converter input,
+        .currency-converter select {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .currency-converter input:focus,
+        .currency-converter select:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .currency-converter select option {
+            background: #2d2d44;
+            color: #fff;
+        }
+
+        .currency-converter .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.3em;
+            color: #00d4ff;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .currency-converter .error {
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+        }
+
+        /* Grapheur de fonction */
+        .function-plotter input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1em;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .function-plotter input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .function-plotter button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            color: #fff;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .function-plotter button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .function-plotter button:active {
+            transform: translateY(0);
+        }
+
+        #chartCanvas {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            max-height: 400px;
+        }
+
+        /* Calculatrice scientifique */
+        .calculator {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .calculator label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b0b0b0;
+            font-size: 0.9em;
+        }
+
+        .calculator-display {
+            width: 100%;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.45);
+            border: none;
+            border-radius: 15px;
+            color: #00d4ff;
+            font-size: 2em;
+            text-align: right;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            min-height: 70px;
+        }
+
+        .calculator-display:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .calc-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .calc-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .calc-btn:active {
+            transform: translateY(0);
+        }
+
+        .calc-btn.operator {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+        }
+
+        .calc-btn.function {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            font-size: 1em;
+        }
+
+        .calc-btn.equals {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            grid-column: span 2;
+        }
+
+        .calc-btn.clear {
+            background: linear-gradient(135deg, #ff9a3c 0%, #ff6b6b 100%);
+        }
+
+        .helper-text {
+            text-align: center;
+            color: #888;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 968px) {
+            .top-section {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .calculator-buttons {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧮 Suite d'Outils Mathématiques & Finances</h1>
+        
+        <!-- Section supérieure : Convertisseur et Grapheur -->
+        <div class="top-section">
+            <!-- Convertisseur de devises -->
+            <div class="card currency-converter">
+                <h2>💱 Convertisseur de Devises</h2>
+                <div class="input-group">
+                    <label for="amount">Montant</label>
+                    <input type="number" id="amount" placeholder="Entrez un montant" value="100">
+                </div>
+                <div class="input-group">
+                    <label for="fromCurrency">De</label>
+                    <select id="fromCurrency">
+                        <option value="EUR" selected>EUR - Euro</option>
+                        <option value="USD">USD - Dollar américain</option>
+                        <option value="GBP">GBP - Livre sterling</option>
+                        <option value="JPY">JPY - Yen japonais</option>
+                        <option value="CHF">CHF - Franc suisse</option>
+                        <option value="CAD">CAD - Dollar canadien</option>
+                        <option value="AUD">AUD - Dollar australien</option>
+                        <option value="CNY">CNY - Yuan chinois</option>
+                        <option value="XOF">XOF - Franc CFA (BCEAO)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="toCurrency">Vers</label>
+                    <select id="toCurrency">
+                        <option value="EUR">EUR - Euro</option>
+                        <option value="USD" selected>USD - Dollar américain</option>
+                        <option value="GBP">GBP - Livre sterling</option>
+                        <option value="JPY">JPY - Yen japonais</option>
+                        <option value="CHF">CHF - Franc suisse</option>
+                        <option value="CAD">CAD - Dollar canadien</option>
+                        <option value="AUD">AUD - Dollar australien</option>
+                        <option value="CNY">CNY - Yuan chinois</option>
+                        <option value="XOF">XOF - Franc CFA (BCEAO)</option>
+                    </select>
+                </div>
+                <div class="result" id="conversionResult">Résultat s'affichera ici</div>
+            </div>
+
+            <!-- Grapheur de fonction -->
+            <div class="card function-plotter">
+                <h2>📈 Grapheur de Fonction</h2>
+                <input type="text" id="functionInput" placeholder="Entrez une fonction (ex: sin(x), x**2, log(x))">
+                <button onclick="plotFunction()">Tracer la fonction</button>
+                <canvas id="chartCanvas"></canvas>
+                <p class="helper-text">Utilisez: sin, cos, tan, log, sqrt, abs, x**2 pour x²</p>
+            </div>
+        </div>
+
+        <!-- Calculatrice scientifique -->
+        <div class="card calculator">
+            <h2>🔢 Calculatrice Scientifique</h2>
+            <label for="calcDisplay">Résultat de la calculatrice</label>
+            <input type="text" class="calculator-display" id="calcDisplay" placeholder="Résultat" readonly>
+            <div class="calculator-buttons">
+                <!-- Première ligne: Fonctions mathématiques -->
+                <button class="calc-btn function" onclick="addToDisplay('sin(')">sin</button>
+                <button class="calc-btn function" onclick="addToDisplay('cos(')">cos</button>
+                <button class="calc-btn function" onclick="addToDisplay('tan(')">tan</button>
+                <button class="calc-btn function" onclick="addToDisplay('log(')">log</button>
+                <button class="calc-btn function" onclick="addToDisplay('sqrt(')">√</button>
+
+                <!-- Deuxième ligne: Autres fonctions -->
+                <button class="calc-btn function" onclick="addSquare()">x²</button>
+                <button class="calc-btn function" onclick="addToDisplay('**')">^</button>
+                <button class="calc-btn function" onclick="addToDisplay('Math.PI')">π</button>
+                <button class="calc-btn function" onclick="addToDisplay('Math.E')">e</button>
+                <button class="calc-btn clear" onclick="clearDisplay()">C</button>
+
+                <!-- Troisième ligne: Parenthèses et opérateurs -->
+                <button class="calc-btn" onclick="addToDisplay('(')">(</button>
+                <button class="calc-btn" onclick="addToDisplay(')')">)</button>
+                <button class="calc-btn operator" onclick="addToDisplay('/')">÷</button>
+                <button class="calc-btn operator" onclick="addToDisplay('*')">×</button>
+                <button class="calc-btn" onclick="backspace()">⌫</button>
+
+                <!-- Lignes des chiffres -->
+                <button class="calc-btn" onclick="addToDisplay('7')">7</button>
+                <button class="calc-btn" onclick="addToDisplay('8')">8</button>
+                <button class="calc-btn" onclick="addToDisplay('9')">9</button>
+                <button class="calc-btn operator" onclick="addToDisplay('-')">-</button>
+                <button class="calc-btn operator" onclick="addToDisplay('+')">+</button>
+
+                <button class="calc-btn" onclick="addToDisplay('4')">4</button>
+                <button class="calc-btn" onclick="addToDisplay('5')">5</button>
+                <button class="calc-btn" onclick="addToDisplay('6')">6</button>
+                <button class="calc-btn" onclick="addToDisplay('0')">0</button>
+                <button class="calc-btn" onclick="addToDisplay('.')">.</button>
+
+                <button class="calc-btn" onclick="addToDisplay('1')">1</button>
+                <button class="calc-btn" onclick="addToDisplay('2')">2</button>
+                <button class="calc-btn" onclick="addToDisplay('3')">3</button>
+                <button class="calc-btn equals" onclick="calculate()">=</button>
+            </div>
+            <p class="helper-text">Vous pouvez aussi utiliser votre clavier</p>
+        </div>
+    </div>
+
+    <script src="caljos.js"></script>
+</body>
+</html>
+
+
